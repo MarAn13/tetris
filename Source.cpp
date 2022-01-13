@@ -200,6 +200,15 @@ public:
 			fig[i].draw_next_fig(window, alt_x, alt_y, fig_type);
 		}
 	}
+	void draw_shadow(sf::RenderWindow& window) {
+		Figure temp_fig = *this;
+		temp_fig.move(3);
+		for (int i = 0; i < 4; ++i) {
+			sf::Color temp = temp_fig.fig[i].sprite.getColor();
+			temp_fig.fig[i].sprite.setColor(sf::Color(temp.r, temp.g, temp.b, 128));
+		}
+		temp_fig.draw(window);
+	}
 	int move(int dir) {
 		bool move_pass = true;
 		int min_dist = down_bound;
@@ -505,6 +514,7 @@ int main() {
 			bg_texture_width, bg_texture_height));
 		bg_sprite.scale(sf::Vector2f(bg_texture_x_scale, bg_texture_y_scale)); // factor relative to the current scale
 		Figure current_fig(gen_sprite(texture));
+		Figure current_fig_shadow = current_fig;
 		Figure next_fig(gen_sprite(texture));
 		std::chrono::time_point<std::chrono::system_clock> elapsed_time = std::chrono::system_clock::now();
 		sf::Event event;
@@ -575,6 +585,7 @@ int main() {
 				down_move_operation(2, current_fig, next_fig, texture, music, sound, output);
 				elapsed_time = std::chrono::system_clock::now();
 			}
+			current_fig_shadow = current_fig;
 			window.clear(sf::Color::Black);
 			window.draw(bg_sprite);
 			next_fig.draw_next_fig(window);
@@ -594,6 +605,7 @@ int main() {
 				}
 			}
 			current_fig.draw(window);
+			current_fig_shadow.draw_shadow(window);
 			window.display();
 		}
 	}
