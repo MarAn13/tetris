@@ -60,7 +60,7 @@ public:
 	}
 	void draw(sf::RenderWindow& window) {
 		sf::Sprite temp_sprite = sprite;
-		temp_sprite.setPosition(sf::Vector2f(static_cast<float>(+field_texture_pos_x + x * tiles_sprite_width),
+		temp_sprite.setPosition(sf::Vector2f(static_cast<float>(field_texture_pos_x + x * tiles_sprite_width),
 			static_cast<float>(field_texture_pos_y + y * tiles_sprite_height))); // absolute position
 		window.draw(temp_sprite);
 	}
@@ -453,6 +453,21 @@ void draw_text(sf::RenderWindow& window, sf::Text& text) {
 		static_cast<float>((level_texture_height * bg_texture_y_scale - text_char_size) / 2.0f + level_texture_pos_y))); // absolute position
 	window.draw(text);
 }
+void draw_pause(sf::RenderWindow& window, sf::Text& text) {
+	const std::string pause_msg = "Pause";
+	const int pause_a = 188;
+	sf::RectangleShape pause_screen(sf::Vector2f(static_cast<float>(field_texture_width * bg_texture_x_scale), static_cast<float>(field_texture_height * bg_texture_y_scale)));
+	pause_screen.setPosition(sf::Vector2f(static_cast<float>(field_texture_pos_x),
+		static_cast<float>(field_texture_pos_y))); // absolute position
+	pause_screen.setFillColor(sf::Color::Black);
+	sf::Color temp = pause_screen.getFillColor();
+	pause_screen.setFillColor(sf::Color(temp.r, temp.g, temp.b, pause_a));
+	window.draw(pause_screen);
+	text.setString(pause_msg);
+	text.setPosition(sf::Vector2f(static_cast<float>(field_texture_width * bg_texture_x_scale / 2.0f + field_texture_pos_x - text.getGlobalBounds().width / 2.0f),
+		static_cast<float>((field_texture_height * bg_texture_y_scale - text_char_size) / 2.0f + field_texture_pos_y))); // absolute position
+	window.draw(text);
+}
 int main() {
 	try {
 		/* auto monitor
@@ -556,6 +571,9 @@ int main() {
 						current_fig.rotate(1);
 					}
 					else if (event.key.code == sf::Keyboard::P) {
+						music.pause();
+						draw_pause(window, text);
+						window.display();
 						while (true) {
 							if (window.waitEvent(event)) {
 								if (event.type == sf::Event::KeyPressed) {
@@ -575,6 +593,7 @@ int main() {
 								}
 							}
 						}
+						music.play();
 					}
 					break;
 				default:
